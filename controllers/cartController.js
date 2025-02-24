@@ -39,16 +39,20 @@ exports.findUserCart = async (req, res) => {
 
 // Controller function for add item to cart
 exports.addItemToCart = async (req, res) => {
-
     const userId = req.user._id;
     const { productId, size } = req.body;
     try {
-        const cart = await Cart.findOne({ user: userId });
+        let cart = await Cart.findOne({ user: userId }); 
 
         if (!cart) {
-            return res.status(404).json({
-                message: "Cart not found, please create a cart first."
+            // Create a new cart for the user
+            cart = new Cart({
+                user: userId,
+                cartItem: []  // Initialize with an empty array of cart items
             });
+
+            // Save the newly created cart
+            await cart.save();
         }
 
         const product = await Product.findById(productId);
@@ -63,6 +67,7 @@ exports.addItemToCart = async (req, res) => {
             product: productId,
             size,
         });
+
         if (isPresent) {
             isPresent.quantity += 1;
             await isPresent.save();
@@ -82,7 +87,7 @@ exports.addItemToCart = async (req, res) => {
             });
 
             const createCartItem = await cartItem.save();
-            cart.cartItem.push(createCartItem)
+            cart.cartItem.push(createCartItem); 
 
             await cart.save();
             res.status(200).json({
@@ -146,4 +151,3 @@ exports.removeCartItem = async (req, res) => {
         })
     }
 }
-
