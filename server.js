@@ -20,7 +20,7 @@ connectdb();
 // middleware
 app.use(bodyParser.json())
 app.use(cors({
-    origin: 'http://localhost:3001',
+    origin: 'https://ecommerce-fashion-world.netlify.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true 
 }));
